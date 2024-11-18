@@ -28,7 +28,6 @@ namespace MigrationTools.Tools
             : base(options, services, logger, telemetryLogger)
         {
 
-           
         }
 
         public  int Enrich(TfsProcessor processor, WorkItemData sourceWorkItem, WorkItemData targetWorkItem)
@@ -120,17 +119,8 @@ namespace MigrationTools.Tools
                         {
                             var displayName = value.Substring(1);
                             Log.LogDebug("{LogTypeName}: User identity {displayName} mention traced on field {fieldName} on target work item {targetWorkItemId}.", LogTypeName, displayName, field.Name, targetWorkItem.Id);
-                            var identity = _targetTeamFoundationIdentitiesLazyCache.Value.FirstOrDefault(i => i.DisplayName == displayName);
-                            if (identity != null)
-                            {
-                                var replaceValue = anchorTagMatch.Value.Replace(href, "#").Replace(version, $"data-vss-mention=\"version:2.0,{identity.TeamFoundationId}\"");
-                                field.Value = field.Value.ToString().Replace(anchorTagMatch.Value, replaceValue);
-                                Log.LogInformation("{LogTypeName}: User identity {displayName} mention was successfully matched on field {fieldName} on target work item {targetWorkItemId}.", LogTypeName, displayName, field.Name, targetWorkItem.Id);
-                            }
-                            else
-                            {
-                                Log.LogInformation("{LogTypeName}: [SKIP] Matching user identity {displayName} mention was not found on field {fieldName} on target work item {targetWorkItemId}. So left it as it is.", LogTypeName, displayName, field.Name, targetWorkItem.Id);
-                            }
+                            field.Value = field.Value.ToString().Replace(anchorTagMatch.Value, "John Doe");
+                            Log.LogInformation("{LogTypeName}: User identity {displayName} mention was replaced with \"John Doe\" on field {fieldName} on target work item {targetWorkItemId}.", LogTypeName, displayName, field.Name, targetWorkItem.Id);
                         }
                     }
                 }

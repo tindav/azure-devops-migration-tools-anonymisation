@@ -59,6 +59,10 @@ namespace MigrationTools
 
             if (context == null) throw new ArgumentNullException(nameof(context));
             var workItem = (WorkItem)context.internalObject;
+            if (workItem.Title.Length > 255)
+            {
+                workItem.Title = workItem.Title.Substring(0, 255);
+            }
             if ((string)workItem.Fields["System.ChangedBy"].Value == string.Empty)
             {
                 workItem.Fields["System.ChangedBy"].Value = "Migration";

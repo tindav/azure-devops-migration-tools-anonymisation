@@ -164,7 +164,6 @@ namespace MigrationTools.Processors
                 ProcessorActivity.SetTag("source_workitems_to_process", sourceWorkItems.Count);
                 foreach (WorkItemData sourceWorkItemData in sourceWorkItems)
                 {
-                    
                     var stopwatch = Stopwatch.StartNew();
                     var sourceWorkItem = TfsExtensions.ToWorkItem(sourceWorkItemData);
                     workItemLog = contextLog.ForContext("SourceWorkItemId", sourceWorkItem.Id);
@@ -259,7 +258,7 @@ namespace MigrationTools.Processors
         //    } else
         //    {
         //        contextLog.Error("nodeStructureEnricher is disabled! Please enable it in the config.");
-        //    }            
+        //    }
         //}
 
         private void ValidateAllWorkItemTypesHaveReflectedWorkItemIdField(List<WorkItemData> sourceWorkItems)
@@ -452,7 +451,7 @@ namespace MigrationTools.Processors
                     {
                         case FieldType.String:
                             CommonTools.StringManipulator.ProcessorExecutionWithFieldItem(null, oldWorkItemData.Fields[f.ReferenceName]);
-                            newWorkItem.Fields[f.ReferenceName].Value = oldWorkItemData.Fields[f.ReferenceName].Value;
+                            newWorkItem.Fields[f.ReferenceName].Value = f.Value;
                             break;
                         default:
                             newWorkItem.Fields[f.ReferenceName].Value = oldWorkItem.Fields[f.ReferenceName].Value;
@@ -702,6 +701,11 @@ namespace MigrationTools.Processors
                             {"RevisionNumber", revision.Number }
                         });
 
+                    foreach (FieldItem f in currentRevisionWorkItem.Fields.Values)
+                    {
+                        CommonTools.UserMapping.MapUserIdentityField(f);
+                    }
+
                     // Decide on WIT
                     var destType = currentRevisionWorkItem.Type;
                     if (CommonTools.WorkItemTypeMapping.Mappings.ContainsKey(destType))
@@ -784,7 +788,7 @@ namespace MigrationTools.Processors
                     }
                     // Impersonate revision author. Mapping will apply later and may change this.
                     targetWorkItem.ToWorkItem().Fields["System.ChangedDate"].Value = revision.Fields["System.ChangedDate"].Value;
-                    targetWorkItem.ToWorkItem().Fields["System.ChangedBy"].Value = revision.Fields["System.ChangedBy"].Value.ToString();
+                    targetWorkItem.ToWorkItem().Fields["System.ChangedBy"].Value = currentRevisionWorkItem.Fields["System.ChangedBy"].Value.ToString();
                     targetWorkItem.ToWorkItem().Fields["System.History"].Value = revision.Fields["System.History"].Value;
 
                     // Todo: Ensure all field maps use WorkItemData.Fields to apply a correct mapping

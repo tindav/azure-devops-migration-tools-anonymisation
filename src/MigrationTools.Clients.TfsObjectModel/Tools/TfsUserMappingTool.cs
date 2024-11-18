@@ -54,15 +54,15 @@ namespace MigrationTools.Tools
 
 
 
-        private void MapUserIdentityField(FieldItem field)
+        public void MapUserIdentityField(FieldItem field)
         {
             if (Options.Enabled && Options.IdentityFieldsToCheck.Contains(field.ReferenceName))
             {
                 Log.LogDebug($"TfsUserMappingTool::MapUserIdentityField [ReferenceName|{field.ReferenceName}]");
                 var mapps = GetMappingFileData();
-                if (mapps != null && mapps.ContainsKey(field.Value.ToString()))
+                if (mapps != null && !string.IsNullOrWhiteSpace(field.Value.ToString()))//&& mapps.ContainsKey(field.Value.ToString()))
                 {
-                    field.Value = mapps[field.Value.ToString()];
+                    field.Value = mapps.First().Value;
                 }
 
             }
@@ -74,10 +74,10 @@ namespace MigrationTools.Tools
             {
                 Log.LogDebug($"TfsUserMappingTool::MapUserIdentityField [ReferenceName|{field.ReferenceName}]");
                 var mapps = GetMappingFileData();
-                if (mapps != null && mapps.ContainsKey(field.Value.ToString()))
+                if (mapps != null && !string.IsNullOrWhiteSpace(field.Value.ToString()))// && mapps.ContainsKey(field.Value.ToString()))
                 {
                     var original = field.Value;
-                    field.Value = mapps[field.Value.ToString()];
+                    field.Value = mapps.First().Value;//[field.Value.ToString()];
                     Log.LogDebug($"TfsUserMappingTool::MapUserIdentityField::Map:[original|{original}][new|{field.Value}]");
                 }
 
